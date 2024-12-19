@@ -5,7 +5,6 @@ import { useGetMe, useLogout } from "@/api/auth";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -46,7 +45,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="border-b border-gray-300 dark:border-gray-800 sticky top-0">
+    <nav className="border-b border-gray-300 dark:border-gray-800 sticky top-0 bg-white dark:bg-gray-950 z-[100]">
       <div className="container mx-auto py-4 flex items-center justify-end gap-4">
         <Button variant="secondary" onClick={handleChangeTheme}>
           {theme === "light" ? (
@@ -83,6 +82,14 @@ const Navbar = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        {pathname !== "/createBootcamp" && (
+          <Button
+            variant="primary"
+            onClick={() => router.push("/createBootcamp")}
+          >
+            Add Bootcamp
+          </Button>
+        )}
       </div>
     </nav>
   );
