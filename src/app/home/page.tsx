@@ -19,7 +19,7 @@ const page = () => {
         </h2>
         <div className="grid grid-cols-4 gap-4">
           {bootcampData?.map((item) => (
-            <Link key={item.id} href="">
+            <Link key={item.id} href={`/bootcamps/${item.id}`}>
               <BootcampCard {...item} />
             </Link>
           ))}
