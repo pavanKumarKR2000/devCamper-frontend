@@ -2,23 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
- 
 
-  const protectedRoutes = [ "/home"];
-  const authRoutes=["/auth/login", "/auth/register"]
+  const protectedRoutes = ["/home"];
+  const authRoutes = ["/auth/login", "/auth/register"];
 
   const authToken = req.cookies.get("token")?.value;
 
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/home", req.url));
+  }
+
   if (protectedRoutes.includes(pathname)) {
-    if (!authToken&&authToken!=="none") {
+    if (!authToken && authToken !== "none") {
       const loginUrl = req.nextUrl.clone();
       loginUrl.pathname = "/auth/login";
       return NextResponse.redirect(loginUrl);
     }
-  }
-
-  else if(authRoutes.includes(pathname)){
-    if (authToken&&authToken!=="none") {
+  } else if (authRoutes.includes(pathname)) {
+    if (authToken && authToken !== "none") {
       const loginUrl = req.nextUrl.clone();
       loginUrl.pathname = "/home";
       return NextResponse.redirect(loginUrl);
@@ -29,5 +30,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/auth/login", "/auth/register", "/home"],
+  matcher: ["/auth/login", "/auth/register", "/home", "/"],
 };
