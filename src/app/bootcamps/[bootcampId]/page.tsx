@@ -1,9 +1,9 @@
 "use client";
-import { useGetBootcampById } from "@/api/bootcamp";
+import { useDeleteBootcamp, useGetBootcampById } from "@/api/bootcamp";
 import { Card } from "@/components/ui/Card";
 import Image from "next/image";
-import { useParams } from "next/navigation";
-import React from "react";
+import { useParams, useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 import bootcampBanner from "../../../../public/coding-bootcamp.jpg";
 import {
   RiStarFill,
@@ -12,6 +12,9 @@ import {
   RiMailFill,
   RiGlobalFill,
   RiMapPin2Fill,
+  RiEditFill,
+  RiDeleteBin6Fill,
+  RiAddFill,
 } from "@remixicon/react";
 import { Badge } from "@/components/ui/Badge";
 import { Bootcamp } from "@/types/bootcamp";
@@ -19,14 +22,60 @@ import { useGetCoursesByBootcampId } from "@/api/course";
 import { Course } from "@/types/course";
 import CourseCard from "@/components/course/CourseCard";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/Dialog";
+import { useUserStore } from "@/stores/userStore";
+import { matchUserId } from "@/lib/utils";
+import { useToast } from "@/hooks/useToast";
+import { TOAST_TIMEOUT } from "@/constants";
 
 const page = () => {
   const { bootcampId } = useParams();
+  const router = useRouter();
+  const { toast } = useToast();
+
   const { data: bootcamp_data } = useGetBootcampById(bootcampId as string);
   const bootcampData = bootcamp_data?.data as Bootcamp;
 
   const { data: course_data } = useGetCoursesByBootcampId(bootcampId as string);
   const courseData = course_data?.data as Course[];
+
+  const { mutate, isSuccess, isError, isPending, error } = useDeleteBootcamp();
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Success",
+        description: "Bootcamp has been deleted",
+        variant: "success",
+        duration: TOAST_TIMEOUT,
+      });
+      router.replace("/home");
+    } else if (isError) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "error",
+        duration: TOAST_TIMEOUT,
+      });
+    }
+  }, [isError, isSuccess]);
+
+  const handleDelete = () => {
+    mutate(bootcampId as string);
+  };
+
+  const { _id: userId, role } = useUserStore((state) => state);
+  const publisherId = bootcampData?.user;
 
   const hasHalfStar =
     bootcampData?.averageRating - Math.floor(bootcampData?.averageRating) > 0
@@ -56,21 +105,84 @@ const page = () => {
                 <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
                   {bootcampData?.name}
                 </h2>
-                <Badge variant="default" className="w-fit">
-                  {bootcampData?.averageRating &&
-                    Array(Math.floor(bootcampData?.averageRating))
-                      .fill(0)
-                      .map((item, index) => (
-                        <RiStarFill
-                          className="h-5 w-5 dark:text-white"
-                          key={index}
-                        />
-                      ))}
-                  {hasHalfStar && (
-                    <RiStarHalfLine className="h-5 w-5 dark:text-white" />
-                  )}
-                </Badge>
+                {bootcampData?.averageRating && (
+                  <Badge variant="default" className="w-fit">
+                    {bootcampData?.averageRating &&
+                      Array(Math.floor(bootcampData?.averageRating))
+                        .fill(0)
+                        .map((item, index) => (
+                          <RiStarFill
+                            className="h-5 w-5 dark:text-white"
+                            key={index}
+                          />
+                        ))}
+                    {hasHalfStar && (
+                      <RiStarHalfLine className="h-5 w-5 dark:text-white" />
+                    )}
+                  </Badge>
+                )}
               </div>
+
+              {matchUserId(userId, publisherId) && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="primary"
+                    className="flex items-center gap-2"
+                    onClick={() => router.push(`/bootcamps/${bootcampId}/edit`)}
+                  >
+                    <RiEditFill className="h-5 w-5" />
+                    Edit bootcamp
+                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        className="flex items-center gap-2"
+                      >
+                        <RiDeleteBin6Fill className="h-5 w-5" />
+                        Delete bootcamp
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-lg">
+                      <DialogHeader>
+                        <DialogTitle>
+                          Are you sure to delete this bootcamp
+                        </DialogTitle>
+                      </DialogHeader>
+                      <DialogFooter className="mt-6 !flex !items-center !justify-center">
+                        <DialogClose asChild>
+                          <Button
+                            className="mt-2 w-full sm:mt-0 sm:w-fit"
+                            variant="secondary"
+                          >
+                            Cancel
+                          </Button>
+                        </DialogClose>
+
+                        <Button
+                          className="w-full sm:w-fit flex items-center gap-2"
+                          variant="destructive"
+                          onClick={handleDelete}
+                          isLoading={isPending}
+                        >
+                          <RiDeleteBin6Fill className="h-5 w-5" />
+                          Delete
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  <Button
+                    variant="primary"
+                    className="flex items-center gap-2"
+                    onClick={() =>
+                      router.push(`/bootcamps/${bootcampId}/addCourse`)
+                    }
+                  >
+                    <RiAddFill className="h-5 w-5" />
+                    Add course
+                  </Button>
+                </div>
+              )}
 
               <p className="mt-2 text-md leading-6 text-gray-900 dark:text-gray-50">
                 {bootcampData?.description}
@@ -120,6 +232,18 @@ const page = () => {
                   <span>{bootcampData?.location?.formattedAddress}</span>
                 </Badge>
               </div>
+              {role === "user" && (
+                <Button
+                  variant="primary"
+                  className="flex items-center gap-3 w-fit"
+                  onClick={() =>
+                    router.push(`/bootcamps/${bootcampId}/addReview`)
+                  }
+                >
+                  <RiAddFill className="h-5 w-5" />
+                  Add Review
+                </Button>
+              )}
             </div>
           </div>
         </div>

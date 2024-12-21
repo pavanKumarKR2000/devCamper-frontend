@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import courseBanner from "../../../../../../public/course.jpg";
 import React from "react";
-import { useGetCoursesById } from "@/api/course";
+import { useGetCourseById } from "@/api/course";
 import { Course } from "@/types/course";
 import { Badge } from "@/components/ui/Badge";
 import {
@@ -19,7 +19,10 @@ import { Bootcamp } from "@/types/bootcamp";
 
 const page = () => {
   const { courseId, bootcampId } = useParams();
-  const { data: course_data } = useGetCoursesById(courseId as string);
+  const { data: course_data } = useGetCourseById(
+    courseId as string,
+    bootcampId as string | undefined
+  );
   const courseData = course_data?.data as Course;
 
   const { data: bootcamp_data } = useGetBootcampById(bootcampId as string);
@@ -29,8 +32,8 @@ const page = () => {
     <main>
       <div className="container mx-auto py-10 space-y-10">
         {/** first row */}
-        <div className="">
-          <div className="flex items-srart gap-10">
+        <div className="w-full">
+          <div className="flex items-start gap-10">
             {/** first column */}
             <div className="relative w-[40%]">
               <div className="absolute inset-0  bg-gradient-to-r from-slate-200 via-transparent to-slate-200 " />
@@ -43,7 +46,7 @@ const page = () => {
             </div>
 
             {/** second column */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 w-[60%]">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
                 {courseData?.title}
               </h2>
