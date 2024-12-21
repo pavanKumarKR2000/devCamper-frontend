@@ -42,9 +42,7 @@ const LoginForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col items-center gap-4 border border-gray-300 dark:border-gray-800 px-10 py-20 rounded-md shadow-md bg-white"
     >
-      <h2 className="font-semibold text-lg italic pb-10">
-        Login to dev camper
-      </h2>
+      <h2 className="font-semibold text-lg italic pb-6">Login to dev camper</h2>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input

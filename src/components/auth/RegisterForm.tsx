@@ -8,12 +8,19 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/Button";
 import { useRegistration } from "@/api/auth";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/Select";
+import { RegistrationSchema } from "@/schemas/auth";
 
-const schema = z.object({
-  name: z.string().min(3, "Name is required"),
-  email: z.string().min(6, "Email is required").email("Invalid email address"),
-  password: z.string().min(6, "Password must be of length greater than 6"),
-});
+const roles = [
+  { value: "user", label: "user" },
+  { value: "publisher", label: "publisher" },
+];
 
 const RegisterForm = () => {
   const { mutate, isError, isPending, data, error } = useRegistration();
@@ -22,11 +29,23 @@ const RegisterForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+    setValue,
+    setError,
+  } = useForm<z.infer<typeof RegistrationSchema>>({
+    resolver: zodResolver(RegistrationSchema),
   });
 
-  const onSubmit = (values: z.infer<typeof schema>) => {
+  const handleRoleChange = (value: "user" | "publisher") => {
+    setValue("role", value);
+
+    if (!value) {
+      setError("role", { message: "Role is required" });
+    } else {
+      setError("role", { message: "" });
+    }
+  };
+
+  const onSubmit = (values: z.infer<typeof RegistrationSchema>) => {
     mutate(values);
   };
 
@@ -35,7 +54,7 @@ const RegisterForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col items-center gap-4 border border-gray-300 dark:border-gray-800 px-10 py-20 rounded-md shadow-md bg-white"
     >
-      <h2 className="font-semibold text-lg italic pb-10">
+      <h2 className="font-semibold text-lg italic pb-6">
         Register to dev camper
       </h2>
       <div className="space-y-2">
@@ -75,9 +94,25 @@ const RegisterForm = () => {
           <p className="text-red-500">{errors.password?.message}</p>
         )}
       </div>
+      <div className="space-y-2">
+        <Label htmlFor="role">Role</Label>
+        <Select onValueChange={handleRoleChange} name="role">
+          <SelectTrigger className="w-96" id="role">
+            <SelectValue placeholder="Select role" />
+          </SelectTrigger>
+          <SelectContent>
+            {roles.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.role && <p className="text-red-500">{errors.role?.message}</p>}
+      </div>
       <Button
         variant="primary"
-        className="w-full mt-6"
+        className="w-full mt-10"
         type="submit"
         isLoading={isPending}
         disabled={isPending}

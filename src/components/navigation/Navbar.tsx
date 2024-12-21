@@ -11,16 +11,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/DropDownMenu";
-import { RiUser3Line, RiSunLine, RiMoonLine } from "@remixicon/react";
+import {
+  RiUser3Line,
+  RiSunLine,
+  RiMoonLine,
+  RiTerminalBoxFill,
+  RiAddFill,
+} from "@remixicon/react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useUserStore } from "@/stores/userStore";
 
 const Navbar = () => {
   const { mutate, isSuccess, isError } = useLogout();
   const { data, isLoading } = useGetMe();
+  const userData = data?.data;
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const router = useRouter();
   const auth_routes = ["/auth/register", "/auth/login"];
   const pathname = usePathname();
+
+  const { setUser } = useUserStore((state) => state);
+
+  useEffect(() => {
+    setUser(userData);
+  }, [userData]);
 
   const handleChangeTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
@@ -46,50 +61,69 @@ const Navbar = () => {
 
   return (
     <nav className="border-b border-gray-300 dark:border-gray-800 sticky top-0 bg-white dark:bg-gray-950 z-[100]">
-      <div className="container mx-auto py-4 flex items-center justify-end gap-4">
-        <Button variant="secondary" onClick={handleChangeTheme}>
-          {theme === "light" ? (
-            <RiSunLine className="h-5 w-5" />
-          ) : (
-            <RiMoonLine className="h-5 w-5" />
-          )}
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" isLoading={isLoading}>
-              <RiUser3Line className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>User name</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <span className="flex items-center gap-x-2">
-                <span>{data?.data?.name}</span>
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>User email</DropdownMenuLabel>
-            <DropdownMenuItem>
-              <span className="flex items-center gap-x-2">
-                <span>{data?.data?.email}</span>
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Button onClick={handleClick} className="w-full">
-                logout
-              </Button>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {pathname !== "/createBootcamp" && (
-          <Button
-            variant="primary"
-            onClick={() => router.push("/createBootcamp")}
-          >
-            Add Bootcamp
+      <div className="container mx-auto py-4 flex items-center justify-between">
+        <Link href="/home">
+          <div className="flex items-center gap-1 dark:text-white">
+            <h2 className="font-bold">DevCamper</h2>
+            <RiTerminalBoxFill className="h-6 w-6" />
+          </div>
+        </Link>
+
+        <div className="flex items-center gap-4">
+          <Button variant="secondary" onClick={handleChangeTheme}>
+            {theme === "light" ? (
+              <RiSunLine className="h-5 w-5" />
+            ) : (
+              <RiMoonLine className="h-5 w-5" />
+            )}
           </Button>
-        )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" isLoading={isLoading}>
+                <RiUser3Line className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="z-[1000]">
+              <DropdownMenuLabel>User name</DropdownMenuLabel>
+              <DropdownMenuItem>
+                <span className="flex items-center gap-x-2">
+                  <span>{userData?.name}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>User email</DropdownMenuLabel>
+              <DropdownMenuItem>
+                <span className="flex items-center gap-x-2">
+                  <span>{userData?.email}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Role</DropdownMenuLabel>
+              <DropdownMenuItem>
+                <span className="flex items-center gap-x-2">
+                  <span>{userData?.role}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Button onClick={handleClick} className="w-full">
+                  logout
+                </Button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {pathname !== "/createBootcamp" &&
+            (userData?.role === "publisher" || userData?.role === "admin") && (
+              <Button
+                variant="primary"
+                onClick={() => router.push("/addBootcamp")}
+                className="flex items-center gap-2"
+              >
+                <RiAddFill className="h-5 w-5" />
+                Add Bootcamp
+              </Button>
+            )}
+        </div>
       </div>
     </nav>
   );

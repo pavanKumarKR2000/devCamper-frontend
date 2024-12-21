@@ -13,7 +13,7 @@ const CourseCard = (props: BootcampCardProps) => {
   //     props.averageRating - Math.floor(props.averageRating) > 0 ? true : false;
 
   return (
-    <Card className="mx-auto max-w-lg space-y-4 bg-gradient-to-b from-slate-50 to-gray-300 dark:bg-gradient-to-b dark:from-black dark:to-black">
+    <Card className="mx-auto h-[500px] max-w-lg space-y-4">
       <Image
         src={courseBanner}
         alt="course banner image"
@@ -25,17 +25,6 @@ const CourseCard = (props: BootcampCardProps) => {
       <p className="mt-2 text-sm leading-6 text-gray-900 dark:text-gray-50">
         {props.description}
       </p>
-      {/* <div className="flex items-center gap-2">
-        <span className="text-sm dark:text-white">
-          Rating ({props.})
-        </span>
-        {Array(Math.floor(props.averageRating))
-          .fill(0)
-          .map((item, index) => (
-            <RiStarFill className="h-4 w-4 dark:text-white" key={index} />
-          ))}
-        {hasHalfStar && <RiStarHalfLine className="h-4 w-4 dark:text-white" />}
-      </div> */}
     </Card>
   );
 };
