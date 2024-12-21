@@ -18,12 +18,12 @@ export const schema = z.object({
         "Blockchain",
         "Software Testing",
         "Devops",
-      ]),
+      ])
     )
     .min(1, "At least one option must be selected"),
   housing: z.boolean(),
   jobAssistance: z.boolean(),
   jobGuarantee: z.boolean(),
   acceptGi: z.boolean(),
-  cost: z.string().transform((value) => parseInt(value)),
+  cost: z.string(),
 });
