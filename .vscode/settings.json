@@ -1,4 +1,4 @@
 {
-    "editor.fontFamily": "ibm plex mono",
-    "terminal.integrated.fontFamily": "ibm plex mono"
+    "editor.fontFamily": "monaco ligaturized",
+    "terminal.integrated.fontFamily": "monaco ligaturized"
 }
