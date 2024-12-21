@@ -62,19 +62,26 @@ export const useLogout=()=>{
 
 export const useGetMe=()=>{
   return useQuery({queryKey:["me"],queryFn:async()=>{
-   const res= await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/me`, {
-      method: 'GET',
-      credentials: 'include'
-    });
-
-    if (!res.ok) {
-      const errorResponse = await res.json();
-      throw new Error(errorResponse.message ||errorResponse.error|| 'Something went wrong');
-    }
-  
-    return res.json();
-    
+    return getMe(); 
   }})
+}
+
+export const getMe=async(authToken?:string)=>{
+  const res= await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/me`, {
+    method: 'GET',
+    credentials: 'include',
+    ...(authToken?{headers: {
+      Authorization: `Bearer ${authToken}`,
+    }}:{}),
+  });
+
+  if (!res.ok) {
+    const errorResponse = await res.json();
+    throw new Error(errorResponse.message ||errorResponse.error|| 'Something went wrong');
+  }
+
+  return res.json();
+ 
 }
 
 

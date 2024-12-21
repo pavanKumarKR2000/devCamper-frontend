@@ -9,15 +9,13 @@ export const useGetBootcamps = () => {
         {
           method: "GET",
           credentials: "include",
-        },
+        }
       );
 
       if (!res.ok) {
         const errorResponse = await res.json();
         throw new Error(
-          errorResponse.message ||
-            errorResponse.error ||
-            "Something went wrong",
+          errorResponse.message || errorResponse.error || "Something went wrong"
         );
       }
 
@@ -35,15 +33,13 @@ export const useGetBootcampById = (id: string) => {
         {
           method: "GET",
           credentials: "include",
-        },
+        }
       );
 
       if (!res.ok) {
         const errorResponse = await res.json();
         throw new Error(
-          errorResponse.message ||
-            errorResponse.error ||
-            "Something went wrong",
+          errorResponse.message || errorResponse.error || "Something went wrong"
         );
       }
 
@@ -64,15 +60,66 @@ export const useCreateBootcamp = () => {
           },
           credentials: "include",
           body: JSON.stringify(body),
-        },
+        }
       );
 
       if (!res.ok) {
         const errorResponse = await res.json();
         throw new Error(
-          errorResponse.message ||
-            errorResponse.error ||
-            "Something went wrong",
+          errorResponse.message || errorResponse.error || "Something went wrong"
+        );
+      }
+
+      return res.json();
+    },
+  });
+};
+
+export const useUpdateBootcamp = () => {
+  return useMutation({
+    mutationFn: async ({ body, id }: { body: any; id: string }) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bootcamps/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!res.ok) {
+        const errorResponse = await res.json();
+        throw new Error(
+          errorResponse.message || errorResponse.error || "Something went wrong"
+        );
+      }
+
+      return res.json();
+    },
+  });
+};
+
+export const useDeleteBootcamp = () => {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bootcamps/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        const errorResponse = await res.json();
+        throw new Error(
+          errorResponse.message || errorResponse.error || "Something went wrong"
         );
       }
 
