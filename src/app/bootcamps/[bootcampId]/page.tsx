@@ -1,42 +1,40 @@
 "use client";
-import { useDeleteBootcamp, useGetBootcampById } from "@/api/bootcamp";
-import { Card } from "@/components/ui/Card";
+import {useDeleteBootcamp, useGetBootcampById} from "@/api/bootcamp";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import {useParams, useRouter} from "next/navigation";
+import React, {useEffect} from "react";
 import bootcampBanner from "../../../../public/coding-bootcamp.jpg";
 import {
+  RiAddFill,
+  RiDeleteBin6Fill,
+  RiEditFill,
+  RiGlobalFill,
+  RiMailFill,
+  RiMapPin2Fill,
+  RiPhoneFill,
   RiStarFill,
   RiStarHalfLine,
-  RiPhoneFill,
-  RiMailFill,
-  RiGlobalFill,
-  RiMapPin2Fill,
-  RiEditFill,
-  RiDeleteBin6Fill,
-  RiAddFill,
 } from "@remixicon/react";
-import { Badge } from "@/components/ui/Badge";
-import { Bootcamp } from "@/types/bootcamp";
-import { useGetCoursesByBootcampId } from "@/api/course";
-import { Course } from "@/types/course";
+import {Badge} from "@/components/ui/Badge";
+import {Bootcamp} from "@/types/bootcamp";
+import {useGetCoursesByBootcampId} from "@/api/course";
+import {Course} from "@/types/course";
 import CourseCard from "@/components/course/CourseCard";
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import {Button} from "@/components/ui/Button";
+import {useUserStore} from "@/stores/userStore";
+import {useToast} from "@/hooks/useToast";
+import {TOAST_TIMEOUT} from "@/constants";
+import {matchUserId} from "@/lib/utils";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "@/components/ui/Dialog";
-import { useUserStore } from "@/stores/userStore";
-import { matchUserId } from "@/lib/utils";
-import { useToast } from "@/hooks/useToast";
-import { TOAST_TIMEOUT } from "@/constants";
 
 const page = () => {
   const { bootcampId } = useParams();
@@ -78,9 +76,7 @@ const page = () => {
   const publisherId = bootcampData?.user;
 
   const hasHalfStar =
-    bootcampData?.averageRating - Math.floor(bootcampData?.averageRating) > 0
-      ? true
-      : false;
+    bootcampData?.averageRating - Math.floor(bootcampData?.averageRating) > 0;
 
   return (
     <main>
@@ -122,68 +118,6 @@ const page = () => {
                   </Badge>
                 )}
               </div>
-
-              {matchUserId(userId, publisherId) && (
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="primary"
-                    className="flex items-center gap-2"
-                    onClick={() => router.push(`/bootcamps/${bootcampId}/edit`)}
-                  >
-                    <RiEditFill className="h-5 w-5" />
-                    Edit bootcamp
-                  </Button>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        className="flex items-center gap-2"
-                      >
-                        <RiDeleteBin6Fill className="h-5 w-5" />
-                        Delete bootcamp
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-lg">
-                      <DialogHeader>
-                        <DialogTitle>
-                          Are you sure to delete this bootcamp
-                        </DialogTitle>
-                      </DialogHeader>
-                      <DialogFooter className="mt-6 !flex !items-center !justify-center">
-                        <DialogClose asChild>
-                          <Button
-                            className="mt-2 w-full sm:mt-0 sm:w-fit"
-                            variant="secondary"
-                          >
-                            Cancel
-                          </Button>
-                        </DialogClose>
-
-                        <Button
-                          className="w-full sm:w-fit flex items-center gap-2"
-                          variant="destructive"
-                          onClick={handleDelete}
-                          isLoading={isPending}
-                        >
-                          <RiDeleteBin6Fill className="h-5 w-5" />
-                          Delete
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  <Button
-                    variant="primary"
-                    className="flex items-center gap-2"
-                    onClick={() =>
-                      router.push(`/bootcamps/${bootcampId}/addCourse`)
-                    }
-                  >
-                    <RiAddFill className="h-5 w-5" />
-                    Add course
-                  </Button>
-                </div>
-              )}
-
               <p className="mt-2 text-md leading-6 text-gray-900 dark:text-gray-50">
                 {bootcampData?.description}
               </p>
@@ -232,6 +166,66 @@ const page = () => {
                   <span>{bootcampData?.location?.formattedAddress}</span>
                 </Badge>
               </div>
+              {matchUserId(userId, publisherId) && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                        variant="primary"
+                        className="flex items-center gap-2"
+                        onClick={() => router.push(`/bootcamps/${bootcampId}/edit`)}
+                    >
+                      <RiEditFill className="h-5 w-5" />
+                      Edit bootcamp
+                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                            variant="destructive"
+                            className="flex items-center gap-2"
+                        >
+                          <RiDeleteBin6Fill className="h-5 w-5" />
+                          Delete bootcamp
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-lg">
+                        <DialogHeader>
+                          <DialogTitle>
+                            Are you sure to delete this bootcamp
+                          </DialogTitle>
+                        </DialogHeader>
+                        <DialogFooter className="mt-6 !flex !items-center !justify-center">
+                          <DialogClose asChild>
+                            <Button
+                                className="mt-2 w-full sm:mt-0 sm:w-fit"
+                                variant="secondary"
+                            >
+                              Cancel
+                            </Button>
+                          </DialogClose>
+
+                          <Button
+                              className="w-full sm:w-fit flex items-center gap-2"
+                              variant="destructive"
+                              onClick={handleDelete}
+                              isLoading={isPending}
+                          >
+                            <RiDeleteBin6Fill className="h-5 w-5" />
+                            Delete
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                    <Button
+                        variant="primary"
+                        className="flex items-center gap-2"
+                        onClick={() =>
+                            router.push(`/bootcamps/${bootcampId}/addCourse`)
+                        }
+                    >
+                      <RiAddFill className="h-5 w-5" />
+                      Add course
+                    </Button>
+                  </div>
+              )}
               {role === "user" && (
                 <Button
                   variant="primary"
