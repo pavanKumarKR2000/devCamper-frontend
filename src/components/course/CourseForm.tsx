@@ -1,33 +1,22 @@
 "use client";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Checkbox } from "@/components/ui/Checkbox";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Textarea } from "@/components/ui/TextArea";
-import { schema } from "@/schemas/course";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import {
-  useCreateBootcamp,
-  useGetBootcampById,
-  useUpdateBootcamp,
-} from "@/api/bootcamp";
-import { toast, useToast } from "@/hooks/useToast";
-import { DevTool } from "@hookform/devtools";
-import { TOAST_TIMEOUT } from "@/constants";
-import { useParams } from "next/navigation";
-import { Bootcamp } from "@/types/bootcamp";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Select,
-} from "../ui/Select";
-import { useAddCourse, useGetCourseById, useUpdateCourse } from "@/api/course";
+import {Button} from "@/components/ui/Button";
+import {Card} from "@/components/ui/Card";
+import {Checkbox} from "@/components/ui/Checkbox";
+import {Input} from "@/components/ui/Input";
+import {Label} from "@/components/ui/Label";
+import {Textarea} from "@/components/ui/TextArea";
+import {schema} from "@/schemas/course";
+import {zodResolver} from "@hookform/resolvers/zod";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {z} from "zod";
+import {useToast} from "@/hooks/useToast";
+import {DevTool} from "@hookform/devtools";
+import {TOAST_TIMEOUT} from "@/constants";
+import {useParams} from "next/navigation";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "../ui/Select";
+import {useAddCourse, useGetCourseById, useUpdateCourse} from "@/api/course";
+import {Course} from "@/types/course";
 
 const minimumSkillOptions = [
   {
@@ -44,7 +33,10 @@ const minimumSkillOptions = [
   },
 ];
 
-let default_values = {};
+let default_values = {
+  minimumSkill:"" as string,
+  scholarshipAvailable:false as boolean,
+};
 
 const CourseForm = () => {
   const { courseId, bootcampId } = useParams();
@@ -53,7 +45,7 @@ const CourseForm = () => {
     bootcampId as string | undefined
   );
   const [defaultValues, setDefaultValues] = useState(default_values);
-  const courseData = course_data?.data as Bootcamp;
+  const courseData = course_data?.data as Course;
 
   const [mode, setMode] = useState<"create" | "edit">("create");
 
@@ -66,7 +58,9 @@ const CourseForm = () => {
     control,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    // defaultValues,
+    defaultValues:{
+      scholarshipAvailable: false,
+    },
     mode: "onChange",
   });
 
@@ -97,26 +91,19 @@ const CourseForm = () => {
   }, [courseId]);
 
   useEffect(() => {
-    // if (bootcampData) {
-    //   setValue("name", bootcampData.name);
-    //   setValue("description", bootcampData.description);
-    //   setValue("address", bootcampData.location.formattedAddress);
-    //   setValue("cost", bootcampData.averageCost.toString());
-    //   setValue("phone", bootcampData.phone);
-    //   setValue("website", bootcampData.website);
-    //   setValue("email", bootcampData.email);
-    //   setValue("careers", bootcampData.careers as any);
-    //   setDefaultValues({
-    //     careers: bootcampData.careers.map((item) => ({
-    //       value: item,
-    //       label: item,
-    //     })),
-    //     acceptGi: bootcampData.acceptGi,
-    //     jobAssistance: bootcampData.jobAssistance,
-    //     jobGuarantee: bootcampData.jobGuarantee,
-    //     housing: bootcampData.housing,
-    //   });
-    // }
+    if (courseData) {
+      setValue("title",courseData.title);
+      setValue("weeks",courseData.weeks.toString());
+      setValue("tuition", courseData.tuition.toString());
+      setValue("description",courseData.description);
+      setValue("minimumSkill",courseData.minimumSkill as any);
+      setValue("scholarshipAvailable",courseData.scholarshipAvailable);
+      console.log("minimum skill",courseData.minimumSkill);
+      setDefaultValues({
+        minimumSkill:courseData.minimumSkill,
+        scholarshipAvailable:courseData.scholarshipAvailable,
+      });
+    }
   }, [courseData, courseId]);
 
   useEffect(() => {
@@ -159,6 +146,7 @@ const CourseForm = () => {
     value: "beginner" | "intermediate" | "advanced"
   ) => {
     setValue("minimumSkill", value);
+    setDefaultValues((prev)=>({...prev, minimumSkill:value}));
 
     if (!value) {
       setError("minimumSkill", { message: "Minimum skill is required" });
@@ -196,7 +184,7 @@ const CourseForm = () => {
   return (
     <>
       <Card className=" w-[70%]">
-        <form onSubmit={handleSubmit(onSubmit)} className=" space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <h2 className="font-semibold text-lg italic pb-10 text-center">
             {mode === "create" ? "Create course" : "Edit course"}
           </h2>
@@ -247,9 +235,10 @@ const CourseForm = () => {
               <Select
                 onValueChange={handleMinimumSkillChange}
                 name="minimumSkill"
+                value={defaultValues.minimumSkill}
               >
-                <SelectTrigger id="minimumSkill" className="!translate-y-0">
-                  <SelectValue placeholder="Select role" />
+                <SelectTrigger id="minimumSkill" className="!translate-y-0" >
+                  <SelectValue placeholder="Select minimum skill" defaultValue={defaultValues.minimumSkill} />
                 </SelectTrigger>
                 <SelectContent>
                   {minimumSkillOptions.map((item) => (
@@ -285,6 +274,7 @@ const CourseForm = () => {
                 id="scholarshipAvailable"
                 name="scholarshipAvailable"
                 onCheckedChange={onScholarshipAvailableChange}
+                checked={defaultValues.scholarshipAvailable}
               />
             </div>
           </div>
@@ -296,7 +286,7 @@ const CourseForm = () => {
             isLoading={isCreatePending || isUpdatePending}
             disabled={isCreatePending || isUpdatePending}
           >
-            {mode === "create" ? "Publish bootcamp" : "Update bootcamp"}
+            {mode === "create" ? "Publish course" : "Update course"}
           </Button>
           {/* {isError && <p className="text-red-500">{error.message}</p>} */}
         </form>

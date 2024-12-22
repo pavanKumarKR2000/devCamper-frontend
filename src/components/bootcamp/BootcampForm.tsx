@@ -73,6 +73,7 @@ const BootcampForm = () => {
 
   const [mode, setMode] = useState<"create" | "edit">("create");
 
+
   const {
     register,
     handleSubmit,
@@ -173,10 +174,16 @@ const BootcampForm = () => {
   }, [isUpdateSuccess, isUpdateError]);
 
   const onCareersChange = (selected: any) => {
+
+    const careers=selected ? selected.map((option: any) => option.value) : [];
+
     setValue(
       "careers",
-      selected ? selected.map((option: any) => option.value) : []
+      careers
     );
+
+    setDefaultValues((prev)=>
+        ({...prev,careers:selected}));
 
     if (selected.length === 0) {
       setError("careers", { message: "At least one option must be selected" });
@@ -186,16 +193,24 @@ const BootcampForm = () => {
   };
 
   const onHousingChange = (checked: boolean) => {
-    setValue("housing", checked);
+    setValue("housing", checked)
+    setDefaultValues((prev)=>
+        ({...prev,housing:checked}));
   };
   const onJobAssistanceChange = (checked: boolean) => {
     setValue("jobAssistance", checked);
+    setDefaultValues((prev)=>
+        ({...prev,jobAssistance:checked}));
   };
-  const onjobGuaranteeChange = (checked: boolean) => {
+  const onJobGuaranteeChange = (checked: boolean) => {
     setValue("jobGuarantee", checked);
+    setDefaultValues((prev)=>
+        ({...prev,jobGuarantee:checked}));
   };
   const onAcceptGi = (checked: boolean) => {
     setValue("acceptGi", checked);
+    setDefaultValues((prev)=>
+        ({...prev,acceptGi:checked}));
   };
 
   const onSubmit = (values: z.infer<typeof schema>) => {
@@ -258,7 +273,7 @@ const BootcampForm = () => {
             </div>
             {/** email */}
             <div className="space-y-2">
-              <Label htmlFor="email">Email adddress</Label>
+              <Label htmlFor="email">Email address</Label>
               <Input
                 placeholder="Enter Email address"
                 id="email"
@@ -297,7 +312,7 @@ const BootcampForm = () => {
                 <Checkbox
                   id="jobGuarantee"
                   name="jobGuarantee"
-                  onCheckedChange={onjobGuaranteeChange}
+                  onCheckedChange={onJobGuaranteeChange}
                   checked={defaultValues.jobGuarantee}
                 />
               </div>
@@ -343,6 +358,7 @@ const BootcampForm = () => {
               <Label htmlFor="careers">Careers</Label>
               <Select
                 isMulti
+                value={defaultValues.careers}
                 id="careers"
                 name="careers"
                 options={careersOptions}

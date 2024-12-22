@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Button } from "../ui/Button";
-import { useGetMe, useLogout } from "@/api/auth";
-import { useRouter } from "next/navigation";
+import React, {useEffect, useState} from "react";
+import {Button} from "../ui/Button";
+import {useGetMe, useLogout} from "@/api/auth";
+import {usePathname, useRouter} from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,16 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/DropDownMenu";
-import {
-  RiUser3Line,
-  RiSunLine,
-  RiMoonLine,
-  RiTerminalBoxFill,
-  RiAddFill,
-} from "@remixicon/react";
-import { usePathname } from "next/navigation";
+import {RiAddFill, RiMoonLine, RiSunLine, RiTerminalBoxFill, RiUser3Line,} from "@remixicon/react";
 import Link from "next/link";
-import { useUserStore } from "@/stores/userStore";
+import {useUserStore} from "@/stores/userStore";
 
 const Navbar = () => {
   const { mutate, isSuccess, isError } = useLogout();
@@ -79,7 +72,8 @@ const Navbar = () => {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" isLoading={isLoading}>
+              <Button variant="secondary" isLoading={isLoading} className="flex items-center gap-2">
+                {userData?.name?.length>=15?`${userData?.name?.substring(0,15)}...`:userData?.name}
                 <RiUser3Line className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
