@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 
 export const useGetCoursesByBootcampId = (id: string) => {
   return useQuery({
@@ -85,7 +85,7 @@ export const useAddCourse = () => {
   });
 };
 
-//courses/:id
+
 export const useUpdateCourse = () => {
   return useMutation({
     mutationFn: async ({ body, courseId }: { body: any; courseId: string }) => {
@@ -105,6 +105,33 @@ export const useUpdateCourse = () => {
         const errorResponse = await res.json();
         throw new Error(
           errorResponse.message || errorResponse.error || "Something went wrong"
+        );
+      }
+
+      return res.json();
+    },
+  });
+};
+
+
+export const useDeleteCourse = () => {
+  return useMutation({
+    mutationFn: async (courseId:string) => {
+      const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/courses/${courseId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+      );
+
+      if (!res.ok) {
+        const errorResponse = await res.json();
+        throw new Error(
+            errorResponse.message || errorResponse.error || "Something went wrong"
         );
       }
 
