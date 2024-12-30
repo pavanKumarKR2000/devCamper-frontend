@@ -1,15 +1,15 @@
 import React from "react";
-import { Card } from "../ui/Card";
-import { Bootcamp } from "@/types/bootcamp";
+import {Card} from "../ui/Card";
+import {Bootcamp} from "@/types/bootcamp";
 import Image from "next/image";
 import bootcampBanner from "../../../public/coding-bootcamp.jpg";
-import { RiStarFill, RiStarHalfLine } from "@remixicon/react";
+import {RiStarFill, RiStarHalfLine} from "@remixicon/react";
 
 interface BootcampCardProps extends Bootcamp {}
 
 const BootcampCard = (props: BootcampCardProps) => {
   const hasHalfStar =
-    props.averageRating - Math.floor(props.averageRating) > 0 ? true : false;
+    props.averageRating - Math.floor(props.averageRating) > 0;
 
   return (
     <Card className="mx-auto max-w-lg space-y-4 h-[460px]">
@@ -25,8 +25,8 @@ const BootcampCard = (props: BootcampCardProps) => {
       <p className="mt-2 text-sm leading-6 text-gray-900 dark:text-gray-50">
         {props.description}
       </p>
-      {props.averageRating && (
-        <div className="flex items-center gap-2">
+      {props.averageRating ? (
+        <div className="flex items-center gap-2 self-end">
           <span className="text-sm dark:text-white">
             Rating ({props.averageRating})
           </span>
@@ -39,7 +39,7 @@ const BootcampCard = (props: BootcampCardProps) => {
             <RiStarHalfLine className="h-4 w-4 dark:text-white" />
           )}
         </div>
-      )}
+      ):<p className="text-sm self-end">No Rating</p>}
     </Card>
   );
 };

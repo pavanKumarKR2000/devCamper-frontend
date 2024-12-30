@@ -1,5 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import axiosInstance from "./axiosInstance";
+import {useMutation, useQuery} from "@tanstack/react-query";
 
 export const useRegistration=()=>{
     return useMutation({mutationFn:async(body:any)=>{
@@ -65,6 +64,32 @@ export const useGetMe=()=>{
     return getMe(); 
   }})
 }
+
+export const useGetUserById = (id:string) => {
+    return useQuery({
+        queryKey: ["user",id],
+        queryFn: async () => {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${id}`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            );
+
+            if (!res.ok) {
+                const errorResponse = await res.json();
+                throw new Error(
+                    errorResponse.message || errorResponse.error || "Something went wrong"
+                );
+            }
+
+            return res.json();
+        },
+    });
+};
+
+
 
 export const getMe=async(authToken?:string)=>{
   const res= await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/me`, {

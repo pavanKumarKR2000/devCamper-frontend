@@ -30,6 +30,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/Dialog";
+import {useUserStore} from "@/stores/userStore";
 
 const page = () => {
   const { courseId, bootcampId } = useParams();
@@ -46,6 +47,9 @@ const page = () => {
 
   const { data: bootcamp_data } = useGetBootcampById(bootcampId as string);
   const bootcampData = bootcamp_data?.data as Bootcamp;
+
+  const { _id: userId, role } = useUserStore((state) => state);
+  const publisherId = bootcampData?.user;
 
   const handleDelete = () => {
     mutate(courseId as string);
@@ -147,7 +151,7 @@ const page = () => {
                   <span>{bootcampData?.location.formattedAddress}</span>
                 </Badge>
               </div>
-              <div className="flex items-center gap-2">
+              {userId===publisherId&&<div className="flex items-center gap-2">
                 <Button variant="primary" className="flex items-center gap-2"
                         onClick={() => router.push(`/bootcamps/${bootcampId}/courses/${courseId}/edit`)}>
                   <RiEditFill className="h-5 w-5"/>
@@ -191,7 +195,7 @@ const page = () => {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-              </div>
+              </div>}
             </div>
           </div>
         </div>

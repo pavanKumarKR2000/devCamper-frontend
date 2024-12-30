@@ -2,7 +2,7 @@
 import {useDeleteBootcamp, useGetBootcampById} from "@/api/bootcamp";
 import Image from "next/image";
 import {useParams, useRouter} from "next/navigation";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import bootcampBanner from "../../../../public/coding-bootcamp.jpg";
 import {
   RiAddFill,
@@ -35,11 +35,15 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/Dialog";
+import {useGetReviews} from "@/api/review";
+import {Review} from "@/types/review";
+import {ReviewCard} from "@/components/review/ReviewCard";
 
 const page = () => {
   const { bootcampId } = useParams();
   const router = useRouter();
   const { toast } = useToast();
+  const [showReviewButton, setShowReviewButton] = useState(false);
 
   const { data: bootcamp_data } = useGetBootcampById(bootcampId as string);
   const bootcampData = bootcamp_data?.data as Bootcamp;
@@ -48,6 +52,17 @@ const page = () => {
   const courseData = course_data?.data as Course[];
 
   const { mutate, isSuccess, isError, isPending, error } = useDeleteBootcamp();
+
+  const {data:review_data}=useGetReviews(bootcampId as string);
+  const reviewData=review_data?.data as Review[]
+
+  const { _id: userId, role } = useUserStore((state) => state);
+  const publisherId = bootcampData?.user;
+
+  const hasHalfStar =
+      bootcampData?.averageRating - Math.floor(bootcampData?.averageRating) > 0;
+
+
 
   useEffect(() => {
     if (isSuccess) {
@@ -68,15 +83,17 @@ const page = () => {
     }
   }, [isError, isSuccess]);
 
+  useEffect(() => {
+         if(reviewData&&userId){
+             const show=reviewData.every((item)=>item.user!==userId);
+             setShowReviewButton(show);
+         }
+  }, [reviewData,userId]);
+
   const handleDelete = () => {
     mutate(bootcampId as string);
   };
 
-  const { _id: userId, role } = useUserStore((state) => state);
-  const publisherId = bootcampData?.user;
-
-  const hasHalfStar =
-    bootcampData?.averageRating - Math.floor(bootcampData?.averageRating) > 0;
 
   return (
     <main>
@@ -226,7 +243,7 @@ const page = () => {
                     </Button>
                   </div>
               )}
-              {role === "user" && (
+              {role === "user" &&showReviewButton&& (
                 <Button
                   variant="primary"
                   className="flex items-center gap-3 w-fit"
@@ -254,6 +271,17 @@ const page = () => {
               >
                 <CourseCard {...item} />
               </Link>
+            ))}
+          </div>
+        </div>
+        {/** third row */}
+        <div>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
+            Reviews
+          </h2>
+          <div className="py-6 flex flex-col gap-2">
+            {reviewData?.map((item) => (
+                  <ReviewCard {...item} key={item._id}/>
             ))}
           </div>
         </div>

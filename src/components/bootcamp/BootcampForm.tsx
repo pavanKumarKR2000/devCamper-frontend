@@ -1,26 +1,22 @@
 "use client";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Checkbox } from "@/components/ui/Checkbox";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Textarea } from "@/components/ui/TextArea";
-import { schema } from "@/schemas/bootcamp";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {Button} from "@/components/ui/Button";
+import {Card} from "@/components/ui/Card";
+import {Checkbox} from "@/components/ui/Checkbox";
+import {Input} from "@/components/ui/Input";
+import {Label} from "@/components/ui/Label";
+import {Textarea} from "@/components/ui/TextArea";
+import {schema} from "@/schemas/bootcamp";
+import {zodResolver} from "@hookform/resolvers/zod";
 import Select from "react-select";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import {
-  useCreateBootcamp,
-  useGetBootcampById,
-  useUpdateBootcamp,
-} from "@/api/bootcamp";
-import { toast, useToast } from "@/hooks/useToast";
-import { DevTool } from "@hookform/devtools";
-import { TOAST_TIMEOUT } from "@/constants";
-import { useParams } from "next/navigation";
-import { Bootcamp } from "@/types/bootcamp";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
+import {z} from "zod";
+import {useCreateBootcamp, useGetBootcampById, useUpdateBootcamp,} from "@/api/bootcamp";
+import {useToast} from "@/hooks/useToast";
+import {DevTool} from "@hookform/devtools";
+import {TOAST_TIMEOUT} from "@/constants";
+import {useParams, useRouter} from "next/navigation";
+import {Bootcamp} from "@/types/bootcamp";
 
 const careersOptions = [
   {
@@ -66,6 +62,9 @@ let default_values = {
 };
 
 const BootcampForm = () => {
+
+  const router=useRouter();
+
   const { bootcampId } = useParams();
   const { data: bootcamp_data } = useGetBootcampById(bootcampId as string);
   const [defaultValues, setDefaultValues] = useState(default_values);
@@ -145,6 +144,8 @@ const BootcampForm = () => {
         variant: "success",
         duration: TOAST_TIMEOUT,
       });
+      router.back();
+
     } else if (isCreateError) {
       toast({
         title: "Error",
@@ -163,6 +164,7 @@ const BootcampForm = () => {
         variant: "success",
         duration: TOAST_TIMEOUT,
       });
+      router.back();
     } else if (isUpdateError) {
       toast({
         title: "Error",

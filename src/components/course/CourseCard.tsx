@@ -1,10 +1,8 @@
 import React from "react";
-import { Card } from "../ui/Card";
-import { Bootcamp } from "@/types/bootcamp";
+import {Card} from "../ui/Card";
 import Image from "next/image";
 import courseBanner from "../../../public/course.jpg";
-import { RiStarFill, RiStarHalfLine } from "@remixicon/react";
-import { Course } from "@/types/course";
+import {Course} from "@/types/course";
 
 interface BootcampCardProps extends Course {}
 
