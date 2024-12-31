@@ -1,14 +1,14 @@
 "use client";
-import React, { useEffect } from "react";
-import { Label } from "../ui/Label";
-import { Input } from "../ui/Input";
+import React, {useEffect} from "react";
+import {Label} from "../ui/Label";
+import {Input} from "../ui/Input";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../ui/Button";
-import { useLogin } from "@/api/auth";
-import { useRouter } from "next/navigation";
+import {useForm} from "react-hook-form";
+import {z} from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Button} from "../ui/Button";
+import {useLogin} from "@/api/auth";
+import {useRouter} from "next/navigation";
 
 const schema = z.object({
   email: z.string().min(6, "Email is required").email("Invalid email address"),

@@ -1,17 +1,26 @@
 "use client";
-import { useLogout } from "@/api/auth";
-import { useGetBootcamps } from "@/api/bootcamp";
+import {useGetMe} from "@/api/auth";
+import {useGetBootcamps} from "@/api/bootcamp";
 import BootcampCard from "@/components/bootcamp/BootcampCard";
-import { useUserStore } from "@/stores/userStore";
-import { Bootcamp } from "@/types/bootcamp";
+import {useUserStore} from "@/stores/userStore";
+import {Bootcamp} from "@/types/bootcamp";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, {useEffect} from "react";
 
 const page = () => {
   const { data } = useGetBootcamps();
-  const { role, _id } = useUserStore((state) => state);
+  const { role, _id,setUser } = useUserStore((state) => state);
   const bootcampData = data?.data as Bootcamp[] | undefined;
+
+  const { data:user_data } = useGetMe();
+  const userData = user_data?.data;
+
+
+  useEffect(() => {
+    if(userData){
+      setUser({_id:userData._id,name:userData.name,role:userData.role,email:userData.email});
+    }
+  }, [userData]);
 
   return (
     <main>

@@ -13,7 +13,6 @@ import {
 } from "../ui/DropDownMenu";
 import {RiAddFill, RiMoonLine, RiSunLine, RiTerminalBoxFill, RiUser3Line,} from "@remixicon/react";
 import Link from "next/link";
-import {useUserStore} from "@/stores/userStore";
 
 const Navbar = () => {
   const { mutate, isSuccess, isError } = useLogout();
@@ -23,13 +22,7 @@ const Navbar = () => {
   const router = useRouter();
   const auth_routes = ["/auth/register", "/auth/login"];
   const pathname = usePathname();
-
-  const { setUser } = useUserStore((state) => state);
-
-  useEffect(() => {
-    setUser(userData);
-  }, [userData]);
-
+  
   const handleChangeTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
     document.documentElement.classList.toggle("dark");
