@@ -6,6 +6,7 @@ import {useUserStore} from "@/stores/userStore";
 import {Bootcamp} from "@/types/bootcamp";
 import Link from "next/link";
 import React, {useEffect} from "react";
+import {useQueryClient} from "@tanstack/react-query";
 
 const page = () => {
   const { data } = useGetBootcamps();
@@ -15,12 +16,17 @@ const page = () => {
   const { data:user_data } = useGetMe();
   const userData = user_data?.data;
 
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if(userData){
       setUser({_id:userData._id,name:userData.name,role:userData.role,email:userData.email});
     }
   }, [userData]);
+
+  useEffect(() => {
+    queryClient.refetchQueries({queryKey:["me"]}).then().catch();
+  }, []);
 
   return (
     <main>
