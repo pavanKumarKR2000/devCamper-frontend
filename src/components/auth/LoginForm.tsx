@@ -1,18 +1,18 @@
-"use client";
-import React, {useEffect} from "react";
-import {Label} from "../ui/Label";
-import {Input} from "../ui/Input";
-import Link from "next/link";
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Button} from "../ui/Button";
-import {useLogin} from "@/api/auth";
-import {useRouter} from "next/navigation";
+'use client';
+import React, { useEffect } from 'react';
+import { Label } from '../ui/Label';
+import { Input } from '../ui/Input';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '../ui/Button';
+import { useLogin } from '@/api/auth';
+import { useRouter } from 'next/navigation';
 
 const schema = z.object({
-  email: z.string().min(6, "Email is required").email("Invalid email address"),
-  password: z.string().min(6, "Password must be of length greater than 6"),
+  email: z.string().min(6, 'Email is required').email('Invalid email address'),
+  password: z.string().min(6, 'Password must be of length greater than 6'),
 });
 
 const LoginForm = () => {
@@ -21,7 +21,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      router.replace("/home");
+      router.push('/home');
     }
   }, [isSuccess]);
 
@@ -50,7 +50,7 @@ const LoginForm = () => {
           id="email"
           type="email"
           className="w-96"
-          {...register("email", { required: true })}
+          {...register('email', { required: true })}
         />
         {errors.email && (
           <p className="text-red-500">{errors.email?.message}</p>
@@ -63,7 +63,7 @@ const LoginForm = () => {
           id="password"
           className="w-96"
           type="password"
-          {...register("password", { required: true })}
+          {...register('password', { required: true })}
         />
         {errors.password && (
           <p className="text-red-500">{errors.password?.message}</p>
@@ -80,7 +80,7 @@ const LoginForm = () => {
       </Button>
       {isError && <p className="text-red-500">{error.message}</p>}
       <p className="pt-10 dark:text-white">
-        dont't have an account ?{" "}
+        dont't have an account ?{' '}
         <Link href="/auth/register" className="underline">
           register
         </Link>
