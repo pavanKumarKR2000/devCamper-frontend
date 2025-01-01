@@ -17,7 +17,7 @@ const schema = z.object({
 
 const LoginForm = () => {
   const router = useRouter();
-  const { mutate, isError, isPending, data, error, isSuccess } = useLogin();
+  const { mutate, isError, isPending, error, isSuccess } = useLogin();
 
   useEffect(() => {
     if (isSuccess) {

@@ -119,8 +119,8 @@ const page = () => {
   return (
     <main>
       <div className="container mx-auto py-10 space-y-10">
-        <div className="flex flex-col items-center gap-4">
-          <RiUser3Line className="h-20 w-20 bg-white rounded-full p-4" />
+        <div className="flex flex-col items-center gap-4 dark:text-white">
+          <RiUser3Line className="h-20 w-20 bg-white rounded-full p-4 dark:text-black" />
           <div className="flex items-center gap-2">
             <span className="text-sm">Name</span>
             <span className="font-bold italic">{name}</span>
